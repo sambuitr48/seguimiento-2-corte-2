@@ -1,0 +1,156 @@
+# Shoestore API - API REST de Zapatería
+
+API REST desarrollada en **Java con Spring Boot** como proyecto académico para el seguimiento del corte 2. Incluye
+operaciones CRUD sobre productos (ítems), integración con base de datos MySQL, pruebas unitarias, de integración y E2E,
+y un pipeline CI/CD automatizado con GitHub Actions.
+
+---
+
+## Contenido del proyecto
+
+### Tecnologías utilizadas
+
+* Java 21
+* Spring Boot 3
+* Spring Data JPA
+* MySQL 8
+* Maven
+* JUnit 5
+* Mockito
+* GitHub Actions
+
+---
+
+## Estructura de carpetas
+
+```
+shoestore-api/
+├── src/
+│   ├── main/
+│   │   └── java/co/cue/edu/shoestore/api/
+│   │       ├── controller/    # Lógica HTTP (ItemController)
+│   │       ├── model/         # Entidad Item
+│   │       ├── service/       # Interfaz ItemService
+│   │       └── service/impl/  # Implementación ItemServiceImpl
+│   └── test/
+│       ├── unit/              # Pruebas unitarias
+│       ├── integration/       # Pruebas de integración con BD
+│       └── e2e/               # Pruebas E2E sobre los endpoints
+├── .github/
+│   └── workflows/ci.yml       # CI/CD pipeline con GitHub Actions
+├── pom.xml                    # Configuración Maven
+├── application.properties     # Configuración de base de datos y JPA
+└── README.md                  # Este archivo
+```
+
+---
+
+## Configuración del entorno
+
+### application.properties
+
+```properties
+spring.application.name=shoestore-api
+spring.datasource.url=jdbc:mysql://localhost:3306/shoestore_db?useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+spring.mvc.pathmatch.matching-strategy=ant_path_matcher
+spring.jackson.serialization.indent_output=true
+```
+
+Asegúrate de tener MySQL ejecutando y haber creado la base de datos:
+
+```sql
+CREATE DATABASE shoestore_db;
+```
+
+---
+
+Pruebas automatizadas
+
+### Pruebas Unitarias (`/unit`)
+
+* `InputValidationTest`: validación de campos con anotaciones (e.g. @NotBlank).
+* `PriceUtilsTest`: prueba de función para aplicar descuentos.
+* `IdGeneratorTest`: prueba de generación de UUID.
+
+### Pruebas de Integración (`/integration`)
+
+* `ItemRepositoryInsertTest`: inserción de ítems en la base de datos.
+* `ItemRepositoryFindTest`: consulta de ítems.
+* `ItemRepositoryDeleteTest`: eliminación de ítems.
+
+### Pruebas E2E (`/e2e`)
+
+* `GetItemsTest`: `GET /api/items` retorna lista y 200 OK.
+* `PostItemTest`: `POST /api/items` crea un ítem y retorna 201.
+* `DeleteItemTest`: `DELETE /api/items/:id` elimina ítem y luego retorna 404 al consultarlo.
+
+Todas las pruebas usan `MockMvc`, `@SpringBootTest`, `@DataJpaTest` y `ObjectMapper`.
+
+---
+
+## Endpoints disponibles
+
+| Método | Endpoint          | Descripción               |
+| ------ | ----------------- | ------------------------- |
+| GET    | `/api/items`      | Lista todos los ítems     |
+| GET    | `/api/items/{id}` | Obtiene un ítem por su ID |
+| POST   | `/api/items`      | Crea un nuevo ítem        |
+| DELETE | `/api/items/{id}` | Elimina un ítem por su ID |
+
+Ejemplo de cuerpo JSON para `POST /api/items`:
+
+```json
+{
+  "name": "Zapatillas",
+  "description": "Deportivas"
+}
+```
+
+---
+
+## CI/CD con GitHub Actions
+
+El proyecto cuenta con integración continua configurada en `.github/workflows/ci.yml`. La pipeline realiza los siguientes pasos:
+
+1. Levanta un contenedor de MySQL 8 sin contraseña.
+2. Clona el repositorio.
+3. Instala JDK 21.
+4. Cachea dependencias de Maven.
+5. Compila y construye el proyecto con `mvn clean install`.
+6. Ejecuta **todas las pruebas** (`mvn test`).
+7. Si todo pasa, muestra:
+
+   ```
+   ```
+
+DEPLOYMENT APPROVED - ALL TESTS SUCCESSFUL!
+
+```
+
+### CI configurado para ejecutarse en:
+- Push a ramas `main` y `dev`
+- Pull request hacia `main` o `dev`
+
+---
+
+## Autor
+
+- Samuel Buitrago
+- Estudiante de Ingeniería de Software – Corporación Universitaria Empresarial Alexander Von Humboldt
+- Proyecto académico para la materia de pruebas
+
+---
+
+## Estado del proyecto
+ Funcionalidad CRUD completa
+ Validaciones y pruebas integradas
+ CI/CD operativo
+ Futuras mejoras: edición (`PUT`), paginación, seguridad (JWT, Auth)
+
+---
+
